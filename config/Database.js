@@ -1,16 +1,10 @@
-const mysql = require("mysql");
+const sequelize = require("sequelize");
 
-const conn = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "sea_db",
-  port: "3306",
+const db = new sequelize("sea_db", "root", "", {
+  dialect: "mysql",
+  logging: false,
 });
 
-conn.connect((err) => {
-  if (err) throw err;
-  console.log("Connected with MySql");
-});
+db.sync({});
 
-module.exports = conn;
+module.exports = db;
