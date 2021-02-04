@@ -37,7 +37,7 @@ class UserController {
           return res.status(200).json({success:true,msg:`Verifying code are sent to this ${check.email}`})
         }
         else{
-          const token =  'Bearer' + jwt.sign({
+          const token = jwt.sign({
             id: user.id
           }, process.env.jwt_secret, {
             expiresIn: 86400 //24h expired
@@ -60,17 +60,16 @@ class UserController {
     const { verifyingToken } = req.body;
 
     try {
-      const secret = process.env.JWT_Activate;
+      const secret = process.env.jwt_active;
       await jwt.verify(verifyingToken, secret, async (err, decoded) => {
         if (!decoded) {
+          console.log(err)
           next({ name: "INVALID_TOKEN" });
         } else {
           const email = decoded.email;
-          const Found = await User.findOne({
-            email,
-          });
-          const secret_key = process.env.JWT_Accesstoken;
-          const access_token = jwt.sign({ _id: Found._id }, secret_key);
+          const Found = await User.findOne({ where: { email: email } })
+          const secret_key = process.env.jwt_secret;
+          const access_token = await jwt.sign({ _id: Found._id }, secret_key);
           const response = res.status(201).json({
             success: true,
             message: `${email} has successfully login`,
@@ -78,14 +77,14 @@ class UserController {
             role: `${Found.role}`,
           });
           if (Found.role === "unregistered") {
-            await User.findOneAndUpdate({ email }, { $set: { role: "user" } });
-            return response;
+            await User.update({role:"user"},{where: { email:email}})
           } else {
-            response;
+            return response
           }
         }
       });
     } catch {
+      console.log("asdao");
       next({ name: "INVALID_TOKEN" });
     }
   }

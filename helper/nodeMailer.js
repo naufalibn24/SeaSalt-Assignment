@@ -14,9 +14,9 @@ class SMTPemail {
       });
       const jwtSecret = process.env.jwt_active;
       const payload = { username: req.body.username, email: req.body.email };
-      const verifyingToken = 'Bearer ' + jwt.sign(payload, jwtSecret);
-
-  
+      const verifyingToken = jwt.sign(payload, jwtSecret);
+      console.log(verifyingToken)
+      
       let mailOptions = {
         from: process.env.Email,
         to: req.body.email,
