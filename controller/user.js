@@ -1,6 +1,6 @@
 const User = require("../models/User");
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 class UserController {
@@ -24,36 +24,40 @@ class UserController {
         newuser.save();
       }
     }
-    next()
+    next();
   }
-  static async login (req, res, next){
-    const {email,username,password} = req.body
-    try{
-      const check = await User.findOne({$or:[{email},{username}]})
-      const pass = await bcrypt.compare(password,check.password)
-      console.log(check)
-      if (check && pass){
-        if(check.role === "unregistered"){
-          return res.status(200).json({success:true,msg:`Verifying code are sent to this ${check.email}`})
-        }
-        else{
-          const token = jwt.sign({
-            id: user.id
-          }, process.env.jwt_secret, {
-            expiresIn: 86400 //24h expired
+  static async login(req, res, next) {
+    const { email, username, password } = req.body;
+    try {
+      const check = await User.findOne({ $or: [{ email }, { username }] });
+      const pass = await bcrypt.compare(password, check.password);
+      console.log(check);
+      if (check && pass) {
+        if (check.role === "unregistered") {
+          return res.status(200).json({
+            success: true,
+            msg: `Verifying code are sent to this ${check.email}`,
           });
+        } else {
+          const token = jwt.sign(
+            {
+              id: check.id,
+              role: check.role,
+            },
+            process.env.jwt_secret
+          );
           res.status(201).json({
             success: true,
             message: `${username || email} has successfully login`,
-            token:token,
+            token: token,
           });
         }
       } else {
-          next({ name: "NOT_FOUND" })
+        next({ name: "NOT_FOUND" });
       }
-    }
-    catch{
-      next({ name: "NOT_FOUND"})
+    } catch {
+      console.log("ashdiahsd");
+      next({ name: "NOT_FOUND" });
     }
   }
   static async confirmUser(req, res, next) {
@@ -63,11 +67,11 @@ class UserController {
       const secret = process.env.jwt_active;
       await jwt.verify(verifyingToken, secret, async (err, decoded) => {
         if (!decoded) {
-          console.log(err)
+          console.log(err);
           next({ name: "INVALID_TOKEN" });
         } else {
           const email = decoded.email;
-          const Found = await User.findOne({ where: { email: email } })
+          const Found = await User.findOne({ where: { email: email } });
           const secret_key = process.env.jwt_secret;
           const access_token = await jwt.sign({ _id: Found._id }, secret_key);
           const response = res.status(201).json({
@@ -77,14 +81,13 @@ class UserController {
             role: `${Found.role}`,
           });
           if (Found.role === "unregistered") {
-            await User.update({role:"user"},{where: { email:email}})
+            User.update({ role: "user" }, { where: { email: email } });
           } else {
-            return response
+            return response;
           }
         }
       });
     } catch {
-      console.log("asdao");
       next({ name: "INVALID_TOKEN" });
     }
   }

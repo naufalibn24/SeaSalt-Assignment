@@ -12,6 +12,10 @@ module.exports = (err, req, res, next) => {
       code = 409;
       message = "Username already exist";
       break;
+    case "NOT_FOUND":
+      code = 404;
+      message = "Either Username or Email or Password combination not found";
+      break;
     default:
       code = 500;
       message = "Internal Server Error!";
