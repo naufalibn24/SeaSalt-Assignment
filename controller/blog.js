@@ -39,7 +39,7 @@ class BlogController {
         });
       }
     } else {
-      next({ name: "NOT_FOUND" });
+      next({ name: "NOT_Authorized" });
     }
   }
   static async update(req, res, next) {
@@ -61,10 +61,10 @@ class BlogController {
         );
         res.status(201).json({ msg: "Blog updated successfully", updated });
       } else {
-        next({ name: "NOT_FOUND" });
+        next();
       }
     } else {
-      next({ name: "NOT_FOUND" });
+      next({ name: "NOT_Authorized" });
     }
   }
   static delete(req, res, next) {
@@ -90,7 +90,7 @@ class BlogController {
         next();
       })
       .catch((err) => {
-        next({ name: "NOT_FOUND" });
+        next({ name: "DATA_NOT_FOUND" });
       });
   }
 

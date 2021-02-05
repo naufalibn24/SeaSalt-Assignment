@@ -32,10 +32,10 @@ class ProfileController {
           });
         }
       } else {
-        next({ name: "PROFILE_ADD" });
+        next({ name: "DATA_EXIST" });
       }
     } else {
-      next({ name: "NOT_AUTHORIZE" });
+      next({ name: "FORBIDDEN" });
     }
   }
   static imageProfile(req, res, next) {

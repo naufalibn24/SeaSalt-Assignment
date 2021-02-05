@@ -12,9 +12,23 @@ module.exports = (err, req, res, next) => {
       code = 409;
       message = "Username already exist";
       break;
+    case "DATA_EXIST":
+      code = 409;
+      message = "Data already exist";
     case "NOT_FOUND":
       code = 404;
       message = "Either Username or Email or Password combination not found";
+      break;
+    case "DATA_NOT_FOUND":
+      code = 404;
+      message = "There is no data available";
+    case "FORBIDDEN":
+      code = 403;
+      message = "No access";
+      break;
+    case "INVALID_TOKEN":
+      code = 401;
+      message = "Invalid access token";
       break;
     default:
       code = 500;
