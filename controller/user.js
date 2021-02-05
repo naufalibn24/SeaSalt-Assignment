@@ -56,7 +56,6 @@ class UserController {
         next({ name: "NOT_FOUND" });
       }
     } catch {
-      console.log("ashdiahsd");
       next({ name: "NOT_FOUND" });
     }
   }
