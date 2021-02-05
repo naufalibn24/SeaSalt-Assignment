@@ -113,6 +113,7 @@ class BlogController {
       res.send(await Promise.all(user));
     });
   }
+
   static pagingfilteringsorting(req, res, next) {
     try {
       let page = parseInt(req.query.page);
@@ -120,8 +121,6 @@ class BlogController {
       let tags = req.query.tags;
 
       const offset = page ? page * limit : 0;
-
-      //   console.log("offset = " + offset);
 
       Blog.findAndCountAll({
         attributes: [
@@ -141,14 +140,6 @@ class BlogController {
         limit: limit,
         offset: offset,
       }).then(async (data) => {
-        const a = await Blog.findAll({
-          where: { tags: tags },
-          order: [
-            ["Author", "ASC"],
-            ["title", "DESC"],
-          ],
-        });
-        console.log(a);
         const totalPages = Math.ceil(data.count / limit);
         const response = {
           message:
@@ -163,9 +154,9 @@ class BlogController {
             totalPages: totalPages,
             limit: limit,
             "tags-filtering": tags,
-            currentPageNumber: page + 0,
-            currentPageSize: a.length,
-            blogs: a,
+            currentPageNumber: page,
+            currentPageSize: data.length,
+            blogs: data.rows,
           },
         };
         res.send(response);
